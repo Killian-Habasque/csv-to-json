@@ -19,6 +19,7 @@ if (isset($_FILES['fileUpload'])) {
     // récupétation du nom du fichier
     $filename = pathinfo($_FILES['fileUpload']['name'], PATHINFO_FILENAME);
     $defaultFilename = $filename;
+    
     // vérification de l'existance du dossier storage
     if (!file_exists("storage")) {
         mkdir('storage', 0777, true);
