@@ -2,11 +2,15 @@
 
 class File
 {
+    public function getExtension($filename)
+    {
+        return pathinfo($filename, PATHINFO_EXTENSION);
+    }
 
     public function convertFile($dataFile, $ext)
     {
         switch ($ext) {
-            case "json":
+            case "csv":
                 $csv = file_get_contents($dataFile);
                 $csvArray = explode("\n", $csv);
                 $valueContent = array_map("str_getcsv", $csvArray);
@@ -23,7 +27,20 @@ class File
                 return $json;
                 break;
             case "xml":
-                
+                $xml_cnt = file_get_contents($dataFile);
+                $xml = simplexml_load_string($xml_cnt);
+                $rows = [];
+                foreach ($xml->row as $valueContent) {
+                    $array = [];
+                    foreach ($valueContent as $key => $column) {
+                        $array[$key] = (string)$column;
+                    }
+                    $rows[] = $array;
+                }
+
+                $jsondata = json_encode($rows); 
+                return $jsondata;
+
                 break;
         }
     }
@@ -40,11 +57,11 @@ class File
         }
     }
 
-    public function checkFileExist($filename, $ext)
+    public function checkFileExist($filename)
     {
-        if (file_exists("storage/" . $filename . "." . $ext)) {
+        if (file_exists("storage/" . $filename . ".json")) {
             $i = 0;
-            while (file_exists("storage/" . $filename . "." . $ext)) {
+            while (file_exists("storage/" . $filename . ".json")) {
                 $i++;
                 if ($i !== 1) {
                     $filename = trim($filename, "_mRwC2j78_" . $i - 1);
@@ -55,17 +72,17 @@ class File
         return $filename;
     }
 
-    public function uploadFile($filename, $file, $ext)
+    public function uploadFile($filename, $file)
     {
-        file_put_contents("storage/" . $filename  . "." . $ext, $file);
+        file_put_contents("storage/" . $filename  . ".json", $file);
     }
 
-    public function downloadFile($defaultFilename, $file, $ext)
+    public function downloadFile($defaultFilename, $file)
     {
         header("Content-Type: application/force-download");
         header("Content-Type: application/download");
-        header("Content-disposition: " . $defaultFilename . "." . $ext);
-        header("Content-disposition: filename=" . $defaultFilename . "." . $ext);
+        header("Content-disposition: " . $defaultFilename . ".json");
+        header("Content-disposition: filename=" . $defaultFilename . ".json");
 
         print $file;
         exit;

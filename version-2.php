@@ -1,11 +1,3 @@
-<?php
-require_once 'class/ConvertInstance.php';
-
-$instance = new ConvertInstance();
-
-
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -21,15 +13,8 @@ $instance = new ConvertInstance();
     <form action="result-2.php" method="post" enctype="multipart/form-data">
         <div>
             <label for="file">Drop your file :</label>
-            <input type="file" name="fileUpload" id="fileUpload" accept=".csv">
+            <input type="file" name="fileUpload" id="fileUpload" accept=".csv, .xml">
         </div>
-        <select name="convertmode">
-            <?php
-            foreach ($instance->exts as $column) {
-                echo '<option value="' . $column . '">' . $column . '</option>';
-            }
-            ?>
-        </select>
         <input type="submit" name="submit" value="Télécharger">
     </form>
 </body>
