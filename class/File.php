@@ -2,11 +2,46 @@
 
 class File
 {
+    public $storageFolder = "storage";
+    public $fileKey = "_mRwC2j78_";
+    
     public function getExtension($filename)
     {
         return pathinfo($filename, PATHINFO_EXTENSION);
     }
 
+    public function getName($filename)
+    {
+        return pathinfo($filename, PATHINFO_FILENAME);
+    }
+
+    public function getFileContent($uploadFilename)
+    {
+        return file_get_contents($this->storageFolder . "/" . $uploadFilename . ".json");
+    }
+
+    public function createStorageFile()
+    {
+        if (!file_exists($this->storageFolder)) {
+            mkdir($this->storageFolder, 0777, true);
+        }
+    }
+
+    public function checkFileExist($filename)
+    {
+        if (file_exists($this->storageFolder . "/" . $filename . ".json")) {
+            $i = 0;
+            while (file_exists($this->storageFolder . "/" . $filename . ".json")) {
+                $i++;
+                if ($i !== 1) {
+                    $filename = trim($filename, $this->fileKey . $i - 1);
+                }
+                $filename = $filename . $this->fileKey  . $i;
+            }
+        }
+        return $filename;
+    }
+    
     public function convertFile($dataFile, $ext)
     {
         switch ($ext) {
@@ -27,54 +62,18 @@ class File
                 return $json;
                 break;
             case "xml":
-                $xml_cnt = file_get_contents($dataFile);
-                $xml = simplexml_load_string($xml_cnt);
-                $rows = [];
-                foreach ($xml->row as $valueContent) {
-                    $array = [];
-                    foreach ($valueContent as $key => $column) {
-                        $array[$key] = (string)$column;
-                    }
-                    $rows[] = $array;
-                }
+                $xml = file_get_contents($dataFile);
+                $xml = simplexml_load_string($xml);
 
-                $jsondata = json_encode($rows); 
-                return $jsondata;
-
+                $json = json_encode($xml); 
+                return $json;
                 break;
         }
     }
 
-    public function getName($filename)
-    {
-        return pathinfo($filename, PATHINFO_FILENAME);
-    }
-
-    public function createStorageFile()
-    {
-        if (!file_exists("storage")) {
-            mkdir('storage', 0777, true);
-        }
-    }
-
-    public function checkFileExist($filename)
-    {
-        if (file_exists("storage/" . $filename . ".json")) {
-            $i = 0;
-            while (file_exists("storage/" . $filename . ".json")) {
-                $i++;
-                if ($i !== 1) {
-                    $filename = trim($filename, "_mRwC2j78_" . $i - 1);
-                }
-                $filename = $filename . "_mRwC2j78_" . $i;
-            }
-        }
-        return $filename;
-    }
-
     public function uploadFile($filename, $file)
     {
-        file_put_contents("storage/" . $filename  . ".json", $file);
+        file_put_contents($this->storageFolder . "/" . $filename  . ".json", $file);
     }
 
     public function downloadFile($defaultFilename, $file)

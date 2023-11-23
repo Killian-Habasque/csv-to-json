@@ -1,3 +1,8 @@
+<?php
+session_start();
+$_SESSION["convertinstance"] = null;
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -9,7 +14,6 @@
 
 <body>
     <h1>CSV/ XML to Json</h1>
-
     <form action="result-2.php" method="post" enctype="multipart/form-data">
         <div>
             <label for="file">Drop your file :</label>
